@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, Fragment, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import IconContainer from "./IconContainer";
 import ReactFlow, {
   useNodesState,
@@ -11,127 +11,55 @@ import ReactFlow, {
   Controls,
   applyEdgeChanges,
   applyNodeChanges,
-  Panel,
+  Edge,
+  Node,
 } from "reactflow";
 import Modal from "./Modal";
+import UploadFile from "@/app/components/UploadFile";
+import { getReactFlowFromJson } from "@/utils/jsonToFlow";
 
 import "reactflow/dist/style.css";
-import { Modern_Antiqua } from "next/font/google";
-
-const initialNodes = [
-  {
-    id: "1",
-    position: { x: 0, y: 0 },
-    data: { label: "Node 1" },
-    type: "input",
-  },
-  {
-    id: "2",
-    position: { x: 0, y: 100 },
-    data: { label: "Node 2" },
-  },
-  {
-    id: "3",
-    position: { x: 0, y: 200 },
-    data: { label: "Node 3" },
-  },
-  {
-    id: "4",
-    type: "group",
-    position: { x: 170, y: 100 },
-    data: { label: "group 1" },
-    style: {
-      width: 280,
-      height: 160,
-    },
-  },
-  {
-    id: "4A",
-    position: { x: 60, y: 10 },
-    data: { label: "Node A" },
-    parentNode: "4",
-    extent: "parent",
-  },
-  {
-    id: "4B",
-    position: { x: 60, y: 70 },
-    data: { label: "Node AB" },
-    parentNode: "4",
-    extent: "parent",
-  },
-  {
-    id: "5",
-    type: "output",
-    position: { x: 0, y: 300 },
-    data: null,
-    style: {
-      width: 170,
-      height: 160,
-      backgroundColor: "rgba(240,240,240,0.25)",
-    },
-  },
-  {
-    id: "5A",
-    data: { label: "Child 1" },
-    position: { x: 50, y: 10 },
-    parentNode: "5",
-    extent: "parent",
-    draggable: false,
-    style: {
-      width: 60,
-    },
-  },
-  {
-    id: "5B",
-    data: { label: "Child 2" },
-    position: { x: 10, y: 90 },
-    parentNode: "5",
-    extent: "parent",
-    draggable: false,
-    style: {
-      width: 60,
-    },
-  },
-  {
-    id: "5C",
-    data: { label: "Child 3" },
-    position: { x: 100, y: 90 },
-    parentNode: "5",
-    extent: "parent",
-    draggable: false,
-    style: {
-      width: 60,
-    },
-  },
-];
-
-const initialEdges = [
-  { id: "e1-2", source: "1", target: "2" },
-  { id: "e2-3", source: "2", target: "3", animated: true },
-  { id: "e3-5", source: "3", target: "5" },
-];
+import { ToastContainer } from "react-toastify";
 
 const ReactFlowContainer = () => {
-  const [nodes, setNodes] = useNodesState(initialNodes);
-  const [edges, setEdges] = useEdgesState(initialEdges);
+  // @ts-ignore
+  const [nodes, setNodes] = useNodesState<Node>([]);
+  const [edges, setEdges] = useEdgesState<Edge>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [childrenModal, setChildrenModal] = useState<React.ReactNode>(null);
+  const [jsonData, setJsonData] = useState<{}[]>([]);
+
+  useEffect(() => {
+    if (nodes.length === 0) {
+      setIsOpen(true);
+      setChildrenModal(
+        <UploadFile setJsonData={setJsonData} closeModal={closeModal} />,
+      );
+    }
+  }, [nodes]);
+
+  useEffect(() => {
+    if (jsonData.length === 0) return;
+    const formattedData = getReactFlowFromJson(jsonData);
+    setNodes(formattedData.nodes);
+    setEdges(formattedData.edges);
+  }, [jsonData, setNodes, setEdges]);
 
   const closeModal = () => setIsOpen(false);
   const openModal = () => setIsOpen(true);
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    [setEdges],
   );
 
   const onNodesChange = useCallback(
     (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes]
+    [setNodes],
   );
   const onEdgesChange = useCallback(
     (changes: any) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
+    [setEdges],
   );
 
   return (
@@ -139,9 +67,23 @@ const ReactFlowContainer = () => {
       style={{ width: "100vw", height: "100vh" }}
       className="react-flow-container"
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <IconContainer
         openModal={openModal}
         setChildrenModal={setChildrenModal}
+        setJsonData={setJsonData}
+        closeModal={closeModal}
       />
       <Modal isOpen={isOpen} closeModal={closeModal}>
         {childrenModal}
@@ -156,7 +98,8 @@ const ReactFlowContainer = () => {
       >
         <Controls />
         <MiniMap />
-        <Background variant="dots" gap={12} size={1} />
+        {/*// @ts-ignore*/}
+        <Background variant="lines" gap={12} size={1} />
       </ReactFlow>
     </div>
   );

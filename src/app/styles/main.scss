@@ -23,10 +23,17 @@ body {
       padding: 10px;
 
       .icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: absolute;
         z-index: 100;
         right: 20px;
         top: 20px;
+      }
+
+      .upload-container{
+        display: flex;
       }
     }
   }
