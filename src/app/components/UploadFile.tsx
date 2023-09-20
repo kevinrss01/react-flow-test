@@ -4,11 +4,14 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import { FileInput } from "flowbite-react";
-import { UploadFileProps } from "@/app/types/interface";
+import { ExcelConvertedJson, UploadFileProps } from "@/app/types/interface";
 
 const UploadFile: React.FC<UploadFileProps> = ({ setJsonData, closeModal }) => {
   const [isValidUpload, setIsValidUpload] = useState<boolean>(false);
-  const [data, setData] = useState<{}[]>();
+  const [data, setData] = useState<ExcelConvertedJson>({
+    nodes: [],
+    edges: [],
+  });
 
   const handleFileChange = async (event: any) => {
     if (event.target.files.length === 0) {
@@ -21,10 +24,16 @@ const UploadFile: React.FC<UploadFileProps> = ({ setJsonData, closeModal }) => {
         const bufferArray = e.target.result;
         const workbook = XLSX.read(bufferArray, { type: "buffer" });
         const worksheetName = workbook.SheetNames[0];
+        const worksheetName2 = workbook.SheetNames[1];
         const worksheet = workbook.Sheets[worksheetName];
-        const data: {}[] = XLSX.utils.sheet_to_json(worksheet);
+        const worksheet2 = workbook.Sheets[worksheetName2];
 
-        setData(data);
+        const JsonData: ExcelConvertedJson = {
+          nodes: XLSX.utils.sheet_to_json(worksheet),
+          edges: XLSX.utils.sheet_to_json(worksheet2),
+        };
+
+        setData(JsonData);
         setIsValidUpload(true);
       };
     } catch (error) {

@@ -17,6 +17,7 @@ import ReactFlow, {
 import Modal from "./Modal";
 import UploadFile from "@/app/components/UploadFile";
 import { getReactFlowFromJson } from "@/utils/jsonToFlow";
+import { ExcelConvertedJson } from "@/app/types/interface";
 
 import "reactflow/dist/style.css";
 import { ToastContainer } from "react-toastify";
@@ -25,13 +26,17 @@ const ReactFlowContainer = () => {
   // @ts-ignore
   const [nodes, setNodes] = useNodesState<Node>([]);
   const [edges, setEdges] = useEdgesState<Edge>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isChildrenModelOpen, setChildrenModelIsOpen] =
+    useState<boolean>(false);
   const [childrenModal, setChildrenModal] = useState<React.ReactNode>(null);
-  const [jsonData, setJsonData] = useState<{}[]>([]);
+  const [jsonData, setJsonData] = useState<ExcelConvertedJson>({
+    nodes: [],
+    edges: [],
+  });
 
   useEffect(() => {
     if (nodes.length === 0) {
-      setIsOpen(true);
+      setChildrenModelIsOpen(true);
       setChildrenModal(
         <UploadFile setJsonData={setJsonData} closeModal={closeModal} />,
       );
@@ -39,14 +44,14 @@ const ReactFlowContainer = () => {
   }, [nodes]);
 
   useEffect(() => {
-    if (jsonData.length === 0) return;
+    if (jsonData.nodes.length === 0) return;
     const formattedData = getReactFlowFromJson(jsonData);
-    setNodes(formattedData.nodes);
-    setEdges(formattedData.edges);
+    setNodes(formattedData.formattedNodes);
+    setEdges(formattedData.formattedEdges);
   }, [jsonData, setNodes, setEdges]);
 
-  const closeModal = () => setIsOpen(false);
-  const openModal = () => setIsOpen(true);
+  const closeModal = () => setChildrenModelIsOpen(false);
+  const openModal = () => setChildrenModelIsOpen(true);
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
@@ -85,7 +90,7 @@ const ReactFlowContainer = () => {
         setJsonData={setJsonData}
         closeModal={closeModal}
       />
-      <Modal isOpen={isOpen} closeModal={closeModal}>
+      <Modal isOpen={isChildrenModelOpen} closeModal={closeModal}>
         {childrenModal}
       </Modal>
       <ReactFlow

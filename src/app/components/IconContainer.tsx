@@ -17,7 +17,7 @@ const ShortcutsList = () => {
         <List>
           {shortcutsList.map((shortcut) => (
             <ListItem key={shortcut.action}>
-              <span className="">{shortcut.action}</span> :{" "}
+              <span className="">{shortcut.action}</span> :
               <span className="font-bold">{shortcut.shortcut}</span>
             </ListItem>
           ))}
