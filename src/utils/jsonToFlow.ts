@@ -1,128 +1,57 @@
 import { Edge, Node } from "reactflow";
 import {
+  ColorType,
   ExcelConvertedJson,
-  ExcelConvertedJsonNode,
   ExcelConvertedJsonEdge,
+  ExcelConvertedJsonNode,
 } from "@/app/types/interface";
-
-// const initialNodes = [
-//   {
-//     id: "1",
-//     position: { x: 0, y: 0 },
-//     data: { label: "Node 1" },
-//     type: "input",
-//   },
-//   {
-//     id: "2",
-//     position: { x: 0, y: 100 },
-//     data: { label: "Node 2" },
-//   },
-//   {
-//     id: "3",
-//     position: { x: 0, y: 200 },
-//     data: { label: "Node 3" },
-//   },
-//   {
-//     id: "4",
-//     type: "group",
-//     position: { x: 170, y: 100 },
-//     data: { label: "group 1" },
-//     style: {
-//       width: 280,
-//       height: 160,
-//     },
-//   },
-//   {
-//     id: "4A",
-//     position: { x: 60, y: 10 },
-//     data: { label: "Node A" },
-//     parentNode: "4",
-//     extent: "parent",
-//   },
-//   {
-//     id: "4B",
-//     position: { x: 60, y: 70 },
-//     data: { label: "Node AB" },
-//     parentNode: "4",
-//     extent: "parent",
-//   },
-//   {
-//     id: "5",
-//     type: "output",
-//     position: { x: 0, y: 300 },
-//     data: null,
-//     style: {
-//       width: 170,
-//       height: 160,
-//       backgroundColor: "rgba(240,240,240,0.25)",
-//     },
-//   },
-//   {
-//     id: "5A",
-//     data: { label: "Child 1" },
-//     position: { x: 50, y: 10 },
-//     parentNode: "5",
-//     extent: "parent",
-//     draggable: false,
-//     style: {
-//       width: 60,
-//     },
-//   },
-//   {
-//     id: "5B",
-//     data: { label: "Child 2" },
-//     position: { x: 10, y: 90 },
-//     parentNode: "5",
-//     extent: "parent",
-//     draggable: false,
-//     style: {
-//       width: 60,
-//     },
-//   },
-//   {
-//     id: "5C",
-//     data: { label: "Child 3" },
-//     position: { x: 100, y: 90 },
-//     parentNode: "5",
-//     extent: "parent",
-//     draggable: false,
-//     style: {
-//       width: 60,
-//     },
-//   },
-// ];
-//
-// const initialEdges = [
-//   { id: "e1-2", source: "1", target: "2" },
-//   { id: "e2-3", source: " 2", target: "3", animated: true },
-//   { id: "e3-5", source: "3", target: "5" },
-// ];
+import { toast } from "react-toastify";
 
 //TODO : Create a function to adapt the group position depending of the group number and the number of nodes in the group
 //TODO : Create a function to adapt the node position in the group depending of the group number and the number of nodes in the group
 
 export const getReactFlowFromJson = (
   jsonData: ExcelConvertedJson,
-): {
-  formattedNodes: Node[];
-  formattedEdges: Edge[];
-} => {
+):
+  | {
+      formattedNodes: Node[];
+      formattedEdges: Edge[];
+    }
+  | undefined => {
   const { nodes, edges } = jsonData;
+  try {
+    const formattedEdges: Edge[] = getEdgesData(edges);
+    const formattedNodes: Node[] = createNodesData(nodes, formattedEdges);
 
-  const formattedNodes: Node[] = createNodesData(nodes);
-  const formattedEdges: Edge[] = getEdgesData(edges);
-
-  return {
-    formattedNodes,
-    formattedEdges,
-  };
+    return {
+      formattedNodes,
+      formattedEdges,
+    };
+  } catch (error) {
+    console.error(error);
+    toast.error("Error while converting JSON to ReactFlow.");
+  }
 };
 
-export const createNodesData = (jsonDataNode: ExcelConvertedJsonNode[]) => {
+export const createNodesData = (
+  jsonDataNode: ExcelConvertedJsonNode[],
+  edgesData: Edge[],
+) => {
   const formattedNodes: Node[] = [];
   const numberNodeByGroup = getNumberNodeByGroup(jsonDataNode);
-  const sizeByGroup = setSizeByGroup(numberNodeByGroup);
+  const sizeByGroup = setSizeByGroup(numberNodeByGroup, edgesData);
+  //const groupPosition = getGroupPosition(sizeByGroup, edgesData);
+
   let indexGroup = 0;
+  let nodePositionInGroup: {
+    [key: string]: {
+      x: number;
+      y: number;
+    };
+  } = {};
+  let indexNodeInGroup: {
+    [key: string]: number;
+  } = {};
 
   jsonDataNode.forEach((node, index) => {
     const {
@@ -134,6 +63,7 @@ export const createNodesData = (jsonDataNode: ExcelConvertedJsonNode[]) => {
 
     if (!formattedNodes.some((n) => n.data.label === nodeGroup)) {
       indexGroup++;
+
       formattedNodes.push({
         id: nodeGroup,
         position: { x: 0, y: indexGroup * 200 },
@@ -147,28 +77,68 @@ export const createNodesData = (jsonDataNode: ExcelConvertedJsonNode[]) => {
       });
     }
 
+    !indexNodeInGroup[nodeGroup]
+      ? (indexNodeInGroup[nodeGroup] = 0)
+      : indexNodeInGroup[nodeGroup]++;
+
+    if (!nodePositionInGroup[nodeGroup]) {
+      nodePositionInGroup[nodeGroup] = {
+        x: 25,
+        y: 50,
+      };
+    } else {
+      const spaceBetweenNodes = 165;
+      const nodePerRow = 3;
+      nodePositionInGroup[nodeGroup].x += spaceBetweenNodes;
+
+      nodePositionInGroup[nodeGroup].y =
+        Math.floor(indexNodeInGroup[nodeGroup] / nodePerRow + 1) + 50;
+    }
+
     formattedNodes.push({
       id: nodeId.toString(),
       position: {
-        x: numberNodeByGroup[nodeGroup].nodesNumber * 25,
-        y: 50,
+        x: nodePositionInGroup[nodeGroup].x,
+        y: nodePositionInGroup[nodeGroup].y,
       },
-      data: { label: nodeName },
+      data: { label: `${nodeName} (${nodeId})` },
       type: "",
       extent: "parent",
       parentNode: nodeGroup,
+      style: {
+        backgroundColor: getTransparentBackgroundColor(nodeColor),
+      },
     });
   });
 
-  console.log(formattedNodes);
-
   return formattedNodes;
 };
+
+function getTransparentBackgroundColor(color: ColorType): string {
+  let rgbaColor: string;
+
+  switch (color) {
+    case "orange":
+      rgbaColor = "rgba(255, 165, 0, 0.5)"; // Orange avec une transparence de 0.5
+      break;
+    case "green":
+      rgbaColor = "rgba(0, 128, 0, 0.5)"; // Green avec une transparence de 0.5
+      break;
+    case "black":
+      rgbaColor = "rgba(0, 0, 0, 0.5)"; // Black avec une transparence de 0.5
+      break;
+    default:
+      throw new Error("Invalid color type");
+  }
+
+  return rgbaColor;
+}
 
 export const getNumberNodeByGroup = (nodes: ExcelConvertedJsonNode[]) => {
   let groupData: {
     [key: string]: {
       nodesNumber: number;
+      nodes: number[];
     };
   } = {};
 
@@ -180,31 +150,46 @@ export const getNumberNodeByGroup = (nodes: ExcelConvertedJsonNode[]) => {
       "Node name": nodeName,
     } = node;
 
-    groupData[nodeGroup] = {
-      nodesNumber: groupData[nodeGroup]?.nodesNumber + 1 || 1,
-    };
+    if (!groupData[nodeGroup]) {
+      groupData[nodeGroup] = {
+        nodesNumber: 0,
+        nodes: [],
+      };
+    }
+
+    groupData[nodeGroup].nodesNumber++;
+    groupData[nodeGroup].nodes.push(nodeId);
   });
 
   return groupData;
 };
 
-export const setSizeByGroup = (numberNodeByGroup: {
+interface NumberNodeByGroup {
   [key: string]: {
     nodesNumber: number;
+    nodes: number[];
     width?: number;
     height?: number;
   };
-}): {
+}
+
+interface SizeByGroup {
   [key: string]: {
     nodesNumber: number;
+    nodes: number[];
     width: number;
     height: number;
   };
-} => {
-  console.log(numberNodeByGroup);
-  //Each group has three nodes per row (120px per row)
+}
+
+export const setSizeByGroup = (
+  numberNodeByGroup: NumberNodeByGroup,
+  edgesData: Edge[],
+): SizeByGroup => {
+  const numberOfNodesPerRow = 3;
+
   const getGroupHeight = (nodesNumber: number) =>
-    Math.floor(nodesNumber / 3 + 1);
+    Math.floor(nodesNumber / numberOfNodesPerRow + 1);
 
   const getGroupWidth = (nodesNumber: number) => {
     const widthPerNode: { [f: string]: number } = {
@@ -218,6 +203,7 @@ export const setSizeByGroup = (numberNodeByGroup: {
   let sizeByGroup: {
     [key: string]: {
       nodesNumber: number;
+      nodes: number[];
       width: number;
       height: number;
     };
@@ -229,14 +215,32 @@ export const setSizeByGroup = (numberNodeByGroup: {
 
     sizeByGroup[group] = {
       nodesNumber,
+      nodes: groupDetail.nodes,
       height: getGroupHeight(nodesNumber) * 120,
       width: getGroupWidth(nodesNumber),
     };
   });
 
-  console.log(sizeByGroup);
-
   return sizeByGroup;
+};
+
+interface GroupTree {
+  top: any[];
+  base:
+    | {
+        name: string;
+        width: number;
+        height: number;
+      }
+    | undefined;
+  bottom: any[];
+}
+
+const getGroupPosition = (
+  sizeAndNodesDataByGroup: SizeByGroup,
+  edgeData: Edge[],
+) => {
+  //
 };
 
 export const getEdgesData = (jsonDataEdge: ExcelConvertedJsonEdge[]) => {

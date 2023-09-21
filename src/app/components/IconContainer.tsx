@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
-import { BsKeyboardFill } from "react-icons/bs";
+import { BsKeyboardFill, BsFiletypeJson } from "react-icons/bs";
 import { RiFileExcel2Fill } from "react-icons/ri";
+import { AiOutlineDownload } from "react-icons/ai";
 import UploadFile from "@/app/components/UploadFile";
 
 import { Icon, Title, List, ListItem } from "@tremor/react";
@@ -42,9 +43,23 @@ const IconContainer: React.FC<IconContainerProps> = ({
     <div className="icon-container gap-1">
       <Icon
         size="md"
+        icon={AiOutlineDownload}
+        variant="solid"
+        tooltip="Download Model"
+        className="cursor-pointer"
+      />
+      <Icon
+        size="md"
+        icon={BsFiletypeJson}
+        variant="solid"
+        tooltip="import JSON file"
+        className="cursor-pointer"
+      />
+      <Icon
+        size="md"
         icon={RiFileExcel2Fill}
         variant={"solid"}
-        tooltip={"Add data (excel file only)"}
+        tooltip={"import Excel files"}
         className="cursor-pointer"
         onClick={() =>
           openNewModal(
@@ -52,7 +67,6 @@ const IconContainer: React.FC<IconContainerProps> = ({
           )
         }
       />
-
       <Icon
         size="md"
         icon={BsKeyboardFill}

@@ -46,8 +46,10 @@ const ReactFlowContainer = () => {
   useEffect(() => {
     if (jsonData.nodes.length === 0) return;
     const formattedData = getReactFlowFromJson(jsonData);
-    setNodes(formattedData.formattedNodes);
-    setEdges(formattedData.formattedEdges);
+    if (!formattedData) return;
+
+    setNodes(formattedData?.formattedNodes);
+    setEdges(formattedData?.formattedEdges);
   }, [jsonData, setNodes, setEdges]);
 
   const closeModal = () => setChildrenModelIsOpen(false);

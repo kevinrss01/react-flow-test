@@ -18,10 +18,12 @@ export interface UploadFileProps {
   closeModal: () => void;
 }
 
+export type ColorType = "orange" | "green" | "black";
+
 export interface ExcelConvertedJsonNode {
   "Node ID": number;
   "Node Group": string;
-  "Node color": string;
+  "Node color": ColorType;
   "Node name": string;
 }
 
