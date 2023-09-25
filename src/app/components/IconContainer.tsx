@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
-import { BsKeyboardFill, BsFiletypeJson } from "react-icons/bs";
-import { RiFileExcel2Fill } from "react-icons/ri";
-import { AiOutlineDownload } from "react-icons/ai";
+import { BsKeyboardFill } from "react-icons/bs";
+import { AiOutlineDownload, AiFillFileAdd } from "react-icons/ai";
 import UploadFile from "@/app/components/UploadFile";
 
 import { Icon, Title, List, ListItem } from "@tremor/react";
@@ -33,6 +32,7 @@ const IconContainer: React.FC<IconContainerProps> = ({
   setChildrenModal,
   setJsonData,
   closeModal,
+  setJsonFormattedData,
 }) => {
   const openNewModal = (component: ReactNode) => {
     setChildrenModal(component);
@@ -50,20 +50,17 @@ const IconContainer: React.FC<IconContainerProps> = ({
       />
       <Icon
         size="md"
-        icon={BsFiletypeJson}
-        variant="solid"
-        tooltip="import JSON file"
-        className="cursor-pointer"
-      />
-      <Icon
-        size="md"
-        icon={RiFileExcel2Fill}
+        icon={AiFillFileAdd}
         variant={"solid"}
-        tooltip={"import Excel files"}
+        tooltip={"import Excel or JSON file"}
         className="cursor-pointer"
         onClick={() =>
           openNewModal(
-            <UploadFile setJsonData={setJsonData} closeModal={closeModal} />,
+            <UploadFile
+              setJsonData={setJsonData}
+              closeModal={closeModal}
+              setJsonFormattedData={setJsonFormattedData}
+            />,
           )
         }
       />

@@ -33,12 +33,23 @@ const ReactFlowContainer = () => {
     nodes: [],
     edges: [],
   });
+  const [jsonFormattedData, setJsonFormattedData] = useState<{
+    nodes: Node[];
+    edges: Edge[];
+  }>({
+    nodes: [],
+    edges: [],
+  });
 
   useEffect(() => {
     if (nodes.length === 0) {
       setChildrenModelIsOpen(true);
       setChildrenModal(
-        <UploadFile setJsonData={setJsonData} closeModal={closeModal} />,
+        <UploadFile
+          setJsonData={setJsonData}
+          closeModal={closeModal}
+          setJsonFormattedData={setJsonFormattedData}
+        />,
       );
     }
   }, [nodes]);
@@ -51,6 +62,11 @@ const ReactFlowContainer = () => {
     setNodes(formattedData?.formattedNodes);
     setEdges(formattedData?.formattedEdges);
   }, [jsonData, setNodes, setEdges]);
+
+  useEffect(() => {
+    setNodes(jsonFormattedData?.nodes);
+    setEdges(jsonFormattedData?.edges);
+  }, [jsonFormattedData, setNodes, setEdges]);
 
   const closeModal = () => setChildrenModelIsOpen(false);
   const openModal = () => setChildrenModelIsOpen(true);
@@ -91,6 +107,7 @@ const ReactFlowContainer = () => {
         setChildrenModal={setChildrenModal}
         setJsonData={setJsonData}
         closeModal={closeModal}
+        setJsonFormattedData={setJsonFormattedData}
       />
       <Modal isOpen={isChildrenModelOpen} closeModal={closeModal}>
         {childrenModal}
