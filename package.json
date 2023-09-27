@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
+    "@react-hookz/web": "^23.1.0",
     "@tremor/react": "3.7.9",
     "@types/node": "20.6.2",
     "@types/react": "18.2.21",
@@ -19,6 +20,7 @@
     "eslint-config-next": "13.4.19",
     "flowbite": "^1.8.1",
     "flowbite-react": "^0.6.0",
+    "moveable": "^0.51.2",
     "next": "13.4.19",
     "postcss": "8.4.29",
     "prettier": "^3.0.3",

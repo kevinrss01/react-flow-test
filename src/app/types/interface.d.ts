@@ -15,6 +15,8 @@ export interface IconContainerProps {
   setJsonFormattedData: React.Dispatch<
     React.SetStateAction<{ nodes: Node[]; edges: Edge[] }>
   >;
+  nodes: Node[];
+  edges: Edge[];
 }
 
 export interface UploadFileProps {
@@ -35,6 +37,11 @@ export interface UploadJsonFileProps {
   setJsonFormattedData: React.Dispatch<
     React.SetStateAction<{ nodes: Node[]; edges: Edge[] }>
   >;
+}
+
+export interface DownloadFlowProps {
+  nodes: Node[];
+  edges: Edge[];
 }
 
 export type ColorType = "orange" | "green" | "black";

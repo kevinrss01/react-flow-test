@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import { BsKeyboardFill } from "react-icons/bs";
 import { AiOutlineDownload, AiFillFileAdd } from "react-icons/ai";
 import UploadFile from "@/app/components/UploadFile";
+import DownloadFlow from "./download/DownloadFlow";
 
 import { Icon, Title, List, ListItem } from "@tremor/react";
 import { IconContainerProps } from "../types/interface";
@@ -33,6 +34,8 @@ const IconContainer: React.FC<IconContainerProps> = ({
   setJsonData,
   closeModal,
   setJsonFormattedData,
+  nodes,
+  edges,
 }) => {
   const openNewModal = (component: ReactNode) => {
     setChildrenModal(component);
@@ -47,6 +50,9 @@ const IconContainer: React.FC<IconContainerProps> = ({
         variant="solid"
         tooltip="Download Model"
         className="cursor-pointer"
+        onClick={() =>
+          openNewModal(<DownloadFlow nodes={nodes} edges={edges} />)
+        }
       />
       <Icon
         size="md"
