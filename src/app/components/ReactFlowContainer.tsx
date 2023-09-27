@@ -59,7 +59,7 @@ const ReactFlowContainer = () => {
           setJsonData={setJsonData}
           closeModal={closeModal}
           setJsonFormattedData={setJsonFormattedData}
-        />,
+        />
       );
     }
   }, [nodes]);
@@ -83,16 +83,16 @@ const ReactFlowContainer = () => {
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges],
+    [setEdges]
   );
 
   const onNodesChange = useCallback(
     (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes],
+    [setNodes]
   );
   const onEdgesChange = useCallback(
     (changes: any) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges],
+    [setEdges]
   );
 
   const onAdd = useCallback(
@@ -122,7 +122,7 @@ const ReactFlowContainer = () => {
       newNodes.push(newNode as Node);
       setNodes(newNodes);
     },
-    [setNodes, nodes],
+    [setNodes, nodes]
   );
 
   return (
@@ -174,7 +174,6 @@ const ReactFlowContainer = () => {
             <SelectItem value="default">Default Node</SelectItem>
             <SelectItem value="input">Input Node</SelectItem>
             <SelectItem value="output">Output Node</SelectItem>
-            <SelectItem value="resizeRotate">Resize Node</SelectItem>
             <SelectItem value="Group">Group</SelectItem>
           </Select>
         </Panel>
