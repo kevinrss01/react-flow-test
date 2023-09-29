@@ -48,7 +48,7 @@ const optionalEdgesFields = [
   "updatable",
 ];
 
-const controlJsonFile = (json: { [key: string]: any }): void => {
+const controlJsonFile = (json: any): void => {
   if (!json.nodes || !json.edges) {
     throw new Error("Your file should have a nodes and edges key");
   }
@@ -84,7 +84,7 @@ const checkFields = (keys: string[], typeObj: "nodes" | "edges") => {
   requiredFields.forEach((field) => {
     if (!keys.includes(field)) {
       throw new Error(
-        `Your file should have a "${field}" key for each ${typeObj} object`,
+        `Your file should have a "${field}" key for each ${typeObj} object`
       );
     }
   });
