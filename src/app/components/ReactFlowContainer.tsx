@@ -22,7 +22,7 @@ import { ExcelConvertedJson } from "@/app/types/interface";
 
 import "reactflow/dist/style.css";
 import { ToastContainer } from "react-toastify";
-import { Button, Select, SelectItem } from "@tremor/react";
+import { Button, Select, SelectItem, Title } from "@tremor/react";
 
 type NodeType = "Group" | "input" | "output" | "default" | "resizeRotate";
 
@@ -64,8 +64,12 @@ const ReactFlowContainer = () => {
     }
   }, [nodes]);
 
+  /**
+   * The above code snippet is a TypeScript React component that uses the useEffect hook to update the
+   * nodes and edges state variables based on changes in the jsonData and jsonFormattedData variables.
+   * It also defines functions for opening and closing a modal, and for handling node and edge changes.
+   */
   useEffect(() => {
-    console.log("geg");
     if (jsonData.nodes.length === 0) return;
     const formattedData = getReactFlowFromJson(jsonData);
     if (!formattedData) return;
@@ -166,7 +170,7 @@ const ReactFlowContainer = () => {
         <MiniMap />
         {/*// @ts-ignore*/}
         <Background variant="lines" gap={12} size={1} />
-        <Panel position="top-left">
+        <Panel position="top-left" className="flex items-center justify-center">
           <Select
             placeholder="Add node"
             onValueChange={(value) => onAdd(value as NodeType)}
@@ -176,6 +180,11 @@ const ReactFlowContainer = () => {
             <SelectItem value="output">Output Node</SelectItem>
             <SelectItem value="Group">Group</SelectItem>
           </Select>
+          {nodes.length === 0 && (
+            <Title color="red" className="w-[300px] pl-3">
+              Please add data
+            </Title>
+          )}
         </Panel>
       </ReactFlow>
     </div>

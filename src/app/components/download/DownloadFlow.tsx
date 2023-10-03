@@ -6,6 +6,15 @@ import { DownloadFlowProps } from "@/app/types/interface";
 import * as XLSX from "xlsx";
 import { Node, Edge } from "reactflow";
 
+/**
+ * The `downloadExcel` function takes an array of nodes and edges, converts them into worksheets, and
+ * then saves them as an Excel file.
+ * @param {Node[]} nodes - The `nodes` parameter is an array of objects representing nodes in a graph.
+ * Each node object has the following properties:
+ * @param {Edge[]} edges - The `edges` parameter is an array of objects representing the connections
+ * between nodes. Each object in the array should have properties such as `source`, `target`, and any
+ * other relevant information about the edge.
+ */
 const downloadExcel = (nodes: Node[], edges: Edge[]) => {
   const flattenedNodes = nodes.map((node) => {
     return {
@@ -31,6 +40,12 @@ const downloadExcel = (nodes: Node[], edges: Edge[]) => {
   XLSX.writeFile(workbook, "data.xlsx");
 };
 
+/**
+ * The `DownloadFlow` function is a React component that handles the download of data in either JSON or
+ * Excel format.
+ * @param {"JSON" | "Excel"} fileType - The `fileType` parameter is a string that can have two possible
+ * values: "JSON" or "Excel". It is used to determine the type of file to be downloaded.
+ */
 const DownloadFlow: React.FC<DownloadFlowProps> = ({ nodes, edges }) => {
   const handleDownload = (fileType: "JSON" | "Excel") => {
     if (fileType === "Excel") {

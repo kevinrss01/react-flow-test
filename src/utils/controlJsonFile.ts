@@ -48,6 +48,13 @@ const optionalEdgesFields = [
   "updatable",
 ];
 
+/**
+ * The function `controlJsonFile` checks if a given JSON file has the required keys and valid structure
+ * for nodes and edges.
+ * @param {any} json - The `json` parameter is an object that represents a JSON file. It is expected to
+ * have a `nodes` property and an `edges` property, both of which should be arrays. Each element in the
+ * `nodes` and `edges` arrays should be an object with at least three properties.
+ */
 const controlJsonFile = (json: any): void => {
   if (!json.nodes || !json.edges) {
     throw new Error("Your file should have a nodes and edges key");

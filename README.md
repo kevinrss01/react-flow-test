@@ -1,27 +1,48 @@
 # Introduction
 
-An example about how works the modal.
-![](./assets/global_architecture.png)
+This project is a web application based on react flow (A highly customizable React component for building node-based editors and interactive diagrams).
+
+This project is using Next.js, React.js, Typescript, Tremor and Tailwind.
+
+Despite it is not recommended for clean code, I added few comments in the code to improve the comprenhension for beginners.
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies with
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
 
 ```bash
 npm run dev
 # or
 yarn dev
 # or
-pnpm dev
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Utilisation
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+In the home page, you can add your own _JSON_ file or start with an exemple and modify it after. (Excel isn't available for the moment).
+You can also download the file in two formats : _JSON_ or _Excel (xlsx)_.
+You can see at top right a boutton to see all keyboard shortcuts.
 
-## Learn More
+---
+
+You can add different types of nodes by clicking on "add node".
+If you click on the black circle on each group/node bottom you can create edges between them.
+
+## Learn more
+
+An example about how works the modal.
+![](./assets/global_architecture.png)
 
 To learn more about Next.js, take a look at the following resources:
 
@@ -30,8 +51,12 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+### React Flow
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If you're interested in learning more about React Flow, here are some resources to get you started:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [React Flow Documentation](https://reactflow.dev/docs/getting-started/introduction) - the official documentation for React Flow.
+- [React Flow Tutorial](https://www.smashingmagazine.com/2020/09/node-based-editor-react-flow/) - a tutorial on building a node-based editor with React Flow.
+- [React Flow Examples](https://github.com/wbkd/react-flow/tree/main/examples) - a collection of examples demonstrating different use cases for React Flow.
+- [React Flow Playground](https://reactflow.dev/examples/playground/) - an interactive playground where you can experiment with React Flow.
+- [React Flow GitHub Repository](https://github.com/wbkd/react-flow) - the GitHub repository for React Flow, where you can find the source code and contribute to the project.

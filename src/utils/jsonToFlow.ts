@@ -1,3 +1,5 @@
+//Take a JSON file resulted from a Excel conversion
+
 import { Edge, Node } from "reactflow";
 import {
   ColorType,
@@ -7,11 +9,27 @@ import {
 } from "@/app/types/interface";
 import { toast } from "react-toastify";
 
+/*
+ * * This code below are not used in the application because layouting is to complex to handle,
+ * * the best way to do that are either use JSON file or Excel file with specifiq and required fields such as
+ * * nodes positions and sizes.
+ */
+
 //TODO : Create a function to adapt the group position depending of the group number and the number of nodes in the group
 //TODO : Create a function to adapt the node position in the group depending of the group number and the number of nodes in the group
 
+/**
+ * The function `getReactFlowFromJson` takes in JSON data and returns formatted nodes and edges for
+ * ReactFlow, or undefined if there is an error.
+ * @param {ExcelConvertedJson} jsonData - The `jsonData` parameter is of type `ExcelConvertedJson`. It
+ * is an object that contains the data extracted from an Excel file and converted to JSON format. The
+ * `jsonData` object has two properties: `nodes` and `edges`.
+ * @returns an object with two properties: "formattedNodes" and "formattedEdges". The value of
+ * "formattedNodes" is an array of Node objects, and the value of "formattedEdges" is an array of Edge
+ * objects.
+ */
 export const getReactFlowFromJson = (
-  jsonData: ExcelConvertedJson,
+  jsonData: ExcelConvertedJson
 ):
   | {
       formattedNodes: Node[];
@@ -35,7 +53,7 @@ export const getReactFlowFromJson = (
 
 export const createNodesData = (
   jsonDataNode: ExcelConvertedJsonNode[],
-  edgesData: Edge[],
+  edgesData: Edge[]
 ) => {
   const formattedNodes: Node[] = [];
   const numberNodeByGroup = getNumberNodeByGroup(jsonDataNode);
@@ -184,7 +202,7 @@ interface SizeByGroup {
 
 export const setSizeByGroup = (
   numberNodeByGroup: NumberNodeByGroup,
-  edgesData: Edge[],
+  edgesData: Edge[]
 ): SizeByGroup => {
   const numberOfNodesPerRow = 3;
 
@@ -238,7 +256,7 @@ interface GroupTree {
 
 const getGroupPosition = (
   sizeAndNodesDataByGroup: SizeByGroup,
-  edgeData: Edge[],
+  edgeData: Edge[]
 ) => {
   //
 };

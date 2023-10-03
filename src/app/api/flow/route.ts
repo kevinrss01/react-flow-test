@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { redirect } from "next/navigation";
 import controlJsonFile from "@/utils/controlJsonFile";
 import { NextResponse } from "next/server";
 

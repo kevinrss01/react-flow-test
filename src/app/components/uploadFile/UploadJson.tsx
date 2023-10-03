@@ -14,7 +14,15 @@ export const UploadJson: React.FC<UploadJsonFileProps> = ({
 }) => {
   const [isValidJsonUpload, setIsValidJsonUpload] = useState<boolean>(false);
   const [unverifiedJson, setUnverifiedJson] = useState<{}>({});
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /**
+   * The function handles the change event when a JSON file is selected, reads the file, parses the
+   * JSON data, and sets the parsed JSON as state.
+   * @param {any} event - The event parameter is an object that represents the event that triggered the
+   * file change. It contains information about the selected file, such as its name, size, and type.
+   */
   const handleJsonFileChange = (event: any) => {
     const jsonFile = event.target.files[0];
 
@@ -38,6 +46,10 @@ export const UploadJson: React.FC<UploadJsonFileProps> = ({
     }
   };
 
+  /**
+   * The function handles the upload of a JSON file, verifies its structure, sets the formatted data,
+   * and displays success or error messages.
+   */
   const handleJsonFileUpload = () => {
     try {
       controlJsonFile(unverifiedJson);
