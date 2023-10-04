@@ -1,5 +1,7 @@
 "use client";
 
+import ELK from "elkjs";
+
 import React, { useCallback, useState, useEffect } from "react";
 import IconContainer from "./IconContainer";
 import ReactFlow, {
@@ -21,8 +23,9 @@ import { getReactFlowFromJson } from "@/utils/jsonToFlow";
 import { ExcelConvertedJson } from "@/app/types/interface";
 
 import "reactflow/dist/style.css";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { Button, Select, SelectItem, Title } from "@tremor/react";
+import { OutputJsonFromExcelToReactFlow } from "@/utils/jsonToFlow";
 
 type NodeType = "Group" | "input" | "output" | "default" | "resizeRotate";
 
@@ -32,6 +35,93 @@ const getId = (nodesLength: number, type: NodeType) => {
     : `Node ${nodesLength + 1}`;
 };
 
+const createLayout = async (formattedData: OutputJsonFromExcelToReactFlow) => {
+  const { formattedNodes, formattedEdges } = formattedData;
+
+  const elk = new ELK();
+
+  const groupNode = formattedNodes.filter((node: Node) => {
+    return node.type === "Group";
+  });
+  const noneGroupNode = formattedNodes.filter((node: Node) => {
+    return node.type !== "Group";
+  });
+
+  let graphChildren: any[] = [];
+  groupNode.forEach((group: Node) => {
+    let children: any[] = [];
+    noneGroupNode.forEach((node: Node) => {
+      if (node.parentNode === group.id) {
+        children.push({
+          id: node.id,
+          width: node.style?.width || 150,
+          height: node.style?.height || 50,
+          layoutOptions: {
+            "elk.direction": "DOWN",
+          },
+        });
+      }
+    });
+
+    graphChildren.push({
+      id: group.id,
+      width: 500,
+      height: 500,
+      layoutOptions: {
+        "elk.direction": "DOWN",
+      },
+      children: children,
+    });
+  });
+
+  const graph = {
+    id: "root",
+    layoutOptions: {
+      "elk.algorithm": "mrtree",
+      "elk.direction": "DOWN",
+    },
+    children: graphChildren,
+    edges: formattedEdges.map((edge: Edge) => ({
+      id: edge.id,
+      sources: [edge.source],
+      targets: [edge.target],
+    })),
+  };
+
+  console.log(graph);
+
+  const layout = await elk.layout(graph);
+
+  if (layout.children) {
+    const nodes = layout.children.reduce((result, current) => {
+      result.push({
+        id: current.id,
+        position: { x: current.x, y: current.y },
+        data: { label: current.id },
+        style: { width: current.width, height: current.height },
+      } as never);
+
+      if (current.children) {
+        current.children.forEach((child) =>
+          result.push({
+            id: child.id,
+            position: { x: child.x, y: child.y },
+            data: { label: child.id },
+            style: { width: child.width, height: child.height },
+            parentNode: current.id,
+          } as never)
+        );
+      }
+
+      return result;
+    }, []);
+
+    return {
+      nodes,
+      edges: formattedEdges,
+    };
+  }
+};
 const ReactFlowContainer = () => {
   // @ts-ignore
   const [nodes, setNodes] = useNodesState<Node[]>([]);
@@ -69,13 +159,22 @@ const ReactFlowContainer = () => {
    * nodes and edges state variables based on changes in the jsonData and jsonFormattedData variables.
    * It also defines functions for opening and closing a modal, and for handling node and edge changes.
    */
+  //Activated when Excel is uploaded
   useEffect(() => {
     if (jsonData.nodes.length === 0) return;
     const formattedData = getReactFlowFromJson(jsonData);
     if (!formattedData) return;
 
-    setNodes(formattedData?.formattedNodes);
-    setEdges(formattedData?.formattedEdges);
+    console.log(formattedData);
+
+    createLayout(formattedData).then((res) => {
+      if (res) {
+        setNodes(res.nodes);
+        setEdges(res.edges);
+      } else {
+        toast.error("Someting went wrong.");
+      }
+    });
   }, [jsonData, setNodes, setEdges]);
 
   useEffect(() => {

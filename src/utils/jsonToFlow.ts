@@ -8,10 +8,11 @@ import {
   ExcelConvertedJsonNode,
 } from "@/app/types/interface";
 import { toast } from "react-toastify";
+import { log } from "console";
 
 /*
  * * This code below are not used in the application because layouting is to complex to handle,
- * * the best way to do that are either use JSON file or Excel file with specifiq and required fields such as
+ * * the best way to do that are either use JSON file or Excel file with specific and required fields such as
  * * nodes positions and sizes.
  */
 
@@ -28,15 +29,17 @@ import { toast } from "react-toastify";
  * "formattedNodes" is an array of Node objects, and the value of "formattedEdges" is an array of Edge
  * objects.
  */
+
+export interface OutputJsonFromExcelToReactFlow {
+  formattedEdges: Edge[];
+  formattedNodes: Node[];
+}
+
 export const getReactFlowFromJson = (
   jsonData: ExcelConvertedJson
-):
-  | {
-      formattedNodes: Node[];
-      formattedEdges: Edge[];
-    }
-  | undefined => {
+): OutputJsonFromExcelToReactFlow | undefined => {
   const { nodes, edges } = jsonData;
+
   try {
     const formattedEdges: Edge[] = getEdgesData(edges);
     const formattedNodes: Node[] = createNodesData(nodes, formattedEdges);
@@ -84,7 +87,7 @@ export const createNodesData = (
 
       formattedNodes.push({
         id: nodeGroup,
-        position: { x: 0, y: indexGroup * 200 },
+        position: { x: 0, y: 0 },
         data: { label: nodeGroup },
         type: "Group",
         style: {
@@ -116,8 +119,8 @@ export const createNodesData = (
     formattedNodes.push({
       id: nodeId.toString(),
       position: {
-        x: nodePositionInGroup[nodeGroup].x,
-        y: nodePositionInGroup[nodeGroup].y,
+        x: 1,
+        y: 1,
       },
       data: { label: `${nodeName} (${nodeId})` },
       type: "",
@@ -240,25 +243,6 @@ export const setSizeByGroup = (
   });
 
   return sizeByGroup;
-};
-
-interface GroupTree {
-  top: any[];
-  base:
-    | {
-        name: string;
-        width: number;
-        height: number;
-      }
-    | undefined;
-  bottom: any[];
-}
-
-const getGroupPosition = (
-  sizeAndNodesDataByGroup: SizeByGroup,
-  edgeData: Edge[]
-) => {
-  //
 };
 
 export const getEdgesData = (jsonDataEdge: ExcelConvertedJsonEdge[]) => {

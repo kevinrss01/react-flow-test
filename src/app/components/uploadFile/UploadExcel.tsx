@@ -1,7 +1,7 @@
 import { Text, Title, Button } from "@tremor/react";
 import React, { useState } from "react";
-//import { FileInput } from "flowbite-react";
-//import { AiFillFileAdd } from "react-icons/ai";
+import { FileInput } from "flowbite-react";
+import { AiFillFileAdd } from "react-icons/ai";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import {
@@ -10,70 +10,6 @@ import {
   ExcelConvertedJsonNode,
 } from "@/app/types/interface";
 import { UploadExcelFileProps } from "@/app/types/interface";
-
-const exampleData: {
-  nodes: ExcelConvertedJsonNode[];
-  edges: ExcelConvertedJsonEdge[];
-} = {
-  nodes: [
-    {
-      "Node ID": 1,
-      "Node name": "Asset Management",
-      "Node Group": "AssetTraceability",
-      "Node color": "orange",
-    },
-    {
-      "Node ID": 2,
-      "Node name": "Asset V0",
-      "Node Group": "AssetTraceability",
-      "Node color": "orange",
-    },
-    {
-      "Node ID": 3,
-      "Node name": "BIM authoring",
-      "Node Group": "ProjectManagement",
-      "Node color": "green",
-    },
-    {
-      "Node ID": 4,
-      "Node name": "Maintenance",
-      "Node Group": "Operation&Maintenance",
-      "Node color": "black",
-    },
-  ],
-  edges: [
-    {
-      "Use case": "Impact analysis",
-      NodeUpstream: 2,
-      NodeDownstream: 1,
-      Label: "Shared",
-    },
-    {
-      "Use case": "Impact analysis",
-      NodeUpstream: 1,
-      NodeDownstream: 4,
-      Label: "Shared",
-    },
-    {
-      "Use case": "New PIM integration",
-      NodeUpstream: 2,
-      NodeDownstream: 1,
-      Label: "Shared",
-    },
-    {
-      "Use case": "New PIM integration",
-      NodeUpstream: 3,
-      NodeDownstream: 2,
-      Label: "Shared",
-    },
-    {
-      "Use case": "New PIM integration",
-      NodeUpstream: 1,
-      NodeDownstream: 4,
-      Label: "Shared",
-    },
-  ],
-};
 
 export const UploadExcel: React.FC<UploadExcelFileProps> = ({
   closeModal,
@@ -105,6 +41,7 @@ export const UploadExcel: React.FC<UploadExcelFileProps> = ({
         };
 
         setData(JsonData);
+
         setIsValidUpload(true);
       };
     } catch (error) {
@@ -113,15 +50,13 @@ export const UploadExcel: React.FC<UploadExcelFileProps> = ({
     }
   };
 
-  const handleFileUpload = (exampleFile: ExcelConvertedJson) => {
-    if (!exampleFile) {
-      if (!isValidUpload || !data) {
-        toast.error("Please select a files");
-        return;
-      }
+  const handleFileUpload = () => {
+    if (!isValidUpload || !data) {
+      toast.error("Please select a files");
+      return;
     }
 
-    setJsonData(exampleFile ? exampleFile : data);
+    setJsonData(data);
     closeModal();
     toast.success("File uploaded successfully !");
   };
@@ -131,21 +66,21 @@ export const UploadExcel: React.FC<UploadExcelFileProps> = ({
       <Title className="mb-5">Add an excel file to create a new Flow</Title>
       <div className="flex items-center flex-col justify-between h-[150px] ">
         <Text>Not available for the moment.</Text>
-        {/*<FileInput*/}
-        {/*  aria-describedby="file_input_help"*/}
-        {/*  className="text-[#3b82f6]"*/}
-        {/*  helperText="Unavailable for the moment"*/}
-        {/*  id="file"*/}
-        {/*  accept=".xls,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"*/}
-        {/*  onChange={handleFileChange}*/}
-        {/*/>*/}
-        {/*<Button*/}
-        {/*  icon={AiFillFileAdd}*/}
-        {/*  onClick={() => handleFileUpload(exampleData)}*/}
-        {/*  disabled={!isValidUpload}*/}
-        {/*>*/}
-        {/*  Add this file*/}
-        {/*</Button>*/}
+        <FileInput
+          aria-describedby="file_input_help"
+          className="text-[#3b82f6]"
+          helperText="Unavailable for the moment"
+          id="file"
+          accept=".xls,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+          onChange={handleFileChange}
+        />
+        <Button
+          icon={AiFillFileAdd}
+          onClick={() => handleFileUpload()}
+          disabled={!isValidUpload}
+        >
+          Add this file
+        </Button>
       </div>
     </>
   );
